@@ -1,0 +1,18 @@
+---
+commands:
+  in: "true" # Required as is called after each put
+  out: |
+    eval "rendered_message=\"${SMUGGLER_message}\""
+    curl --fail -qs \
+        --form-string "token=${SMUGGLER_app_token}" \
+        --form-string "user=${SMUGGLER_user_key}" \
+        --form-string "message=${rendered_message}" \
+        https://api.pushover.net/1/messages.json > response.json
+    echo "response=$(cat response.json)" > ${SMUGGLER_OUTPUT_DIR}/metadata
+    date > ${SMUGGLER_OUTPUT_DIR}/versions
+
+# Defaults
+atc_external_url: http://localhost:8080
+message: |
+  Message from:
+    ${SMUGGLER_atc_external_url}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/builds/${BUILD_NAME}
