@@ -1,0 +1,42 @@
+resource_types:
+- name: pushover-notification
+  type: docker-image
+  source:
+    repository: keymon/concourse-pushover-resource
+    tag: latest
+
+resources:
+- name: pushover-build-fail-notification
+  type: pushover-notification
+  source:
+    atc_external_url: https://concourse.mycompany.com
+    app_token: {{pushover_build_notifications_app_token}}
+    user_key: {{pushover_group_key}}
+
+jobs:
+- name: some_important_job
+  plan:
+  - task: fail
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: alpine
+      run:
+        path: sh
+        args:
+        - -ec
+        - |
+          echo 'Something bad happened :('
+          false
+    on_failure:
+      put: pushover-build-fail-notification
+      params:
+        message: |
+          OMG!!! the important job failed!!! ARGHHH!
+
+          Check it out ASAP here:
+
+          ${SMUGGLER_atc_external_url}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/builds/${BUILD_NAME}
+

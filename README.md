@@ -81,6 +81,21 @@ jobs:
 > be aware of this.  It is easy to fork this repo and change the file `smuggler.yml` to
 > remove that eval.
 
+## Pre-requisites
+
+You need a  [pushover app](https://pushover.net/) account and credentials
+
+## Configure pipeline:
+
+Now you can create and run the pipeline:
+
+```
+fly -t demo set-pipeline \
+  -p pushover -c example-pipeline.yml \
+  -v pushover_build_notifications_app_token=${PUSHOVER_CONCOURSE_DEMO_APP_TOKEN}
+  -v pushover_group_key=${PUSHOVER_USER_KEY}
+```
+
 ## Contributing
 
 It is easy to extend this resource, by editing the file `smuggler.yml`.
