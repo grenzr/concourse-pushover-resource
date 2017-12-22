@@ -2,7 +2,13 @@
 commands:
   in: "true" # Required as is called after each put
   out: |
-    eval "rendered_message=\"${SMUGGLER_message}\""
+    if [ "${SMUGGLER_message:-}"; then
+      eval "rendered_message=\"${SMUGGLER_message}\""
+    elif [ "$SMUGGLER_message_file:-}" ]; then
+      rendered_message="$(cat "${SMUGGLER_message_file})"
+    else
+      rendered_message="$BUILD_JOB_NAME"
+    fi
     curl --fail -qs \
         --form-string "token=${SMUGGLER_app_token}" \
         --form-string "user=${SMUGGLER_user_key}" \
